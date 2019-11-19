@@ -1,3 +1,5 @@
+import random
+
 ####
 # Each team's file must define four tokens:
 #     team_name: a string
@@ -10,7 +12,7 @@ team_name = 'E8'
 strategy_name = 'Use early history'
 strategy_description = '''\
 Randomly select to collude or betry. Compare the previous example betrayed, 
-then betray every time. Unless their previous history is collude then collude, 
+then betray every time. Unless their previous history is collude the collusde, 
 until betrayed.
 '''
     
@@ -26,9 +28,9 @@ def move(my_history, their_history, my_score, their_score):
     '''
     if len(my_history)==0: # It's the first round: collude
         return 'c'
-    while len(my_history)>=1:
-        # If the round is anyround other than the first round,
-        # either randomly pick if their history is c otherwise b
+    else:
+        # If there was a previous round just like the last one,
+        # do whatever they did in the round that followed it
         
         # Reference last round
         recent_round_them = their_history[-1]
@@ -43,13 +45,8 @@ def move(my_history, their_history, my_score, their_score):
                     (prior_round_them == recent_round_them):
                 return their_history[round]
         # No match found
-        while 'c' == their_history:
-            if their_history == 'c':
-                import random 
-                return random.choice('cb') # Betray if they were severely punished last time
-            else:
-                return 'b'
-       
-        while 'b' == their_history:
-            return 'b'
+        if 'b' == their_history:
+            return 'c' # Betray if they were severely punished last time
+        else:
+            return 'c'
     
