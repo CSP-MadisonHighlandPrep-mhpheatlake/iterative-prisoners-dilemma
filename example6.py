@@ -12,16 +12,22 @@ strategy_description = '''\
 Collude first round. Collude, unless betrayed; then always betray.'''
     
 def move(my_history, their_history, my_score, their_score):
-    '''Make my move based on the history with this player.
-    
-    history: a string with one letter (c or b) per round that has been played with this opponent.
-    their_history: a string of the same length as history, possibly empty. 
-    The first round between these two players is my_history[0] and their_history[0]
-    The most recent round is my_history[-1] and their_history[-1]
-    
-    Returns 'c' or 'b' for collude or betray.
-    '''
-    if 'b' in their_history:
-        return 'b'
-    else:
+    if len(my_history)==0:
         return 'c'
+    elif len(my_history)<5 & len(my_history)>0:
+        if my_history[-1]=='c' and their_history[-1]=='b':
+            return 'b'
+        else:
+            return 'c'
+            
+    last6rounds = their_history[-6:]
+    
+    n = 0
+    for c in last6rounds:
+        n=n+1
+        print(n)
+    
+    if n/6 < 0.5:
+        return 'c' # Betray if severely punished last time,
+    else:
+        return 'b' # otherwise collude
