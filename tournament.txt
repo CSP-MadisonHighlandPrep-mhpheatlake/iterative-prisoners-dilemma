@@ -1,28 +1,28 @@
 --------------------------------------------------------------------------------
 Section 0 - Line up
 --------------------------------------------------------------------------------
-Player 0 (P0): E0, Collude
-        Always collude.
-Player 1 (P1): E6, Collude until betrayed
+Player 0 (P0): E1, Betray
+        Always betray.
+Player 1 (P1): E6, Kill everyone
         Collude first round. Collude, unless betrayed; then always betray.
 --------------------------------------------------------------------------------
 Section 1 - Player vs. Player
 --------------------------------------------------------------------------------
 Each column shows pts/round earned against each other player:
              P0     P1
-vs. P0 :      0     96
-vs. P1 :   -484      0
-TOTAL  :   -484     96
+vs. P0 :      0   -252
+vs. P1 :   -248      0
+TOTAL  :   -248   -252
 --------------------------------------------------------------------------------
 Section 2 - Leaderboard
 --------------------------------------------------------------------------------
 Average points per round:
 Team name (P#):  Score      with strategy name
-E6        (P1):         48 points with Collude until betrayed                  
-E0        (P0):       -242 points with Collude                                 
+E1        (P0):       -124 points with Betray                                  
+E6        (P1):       -126 points with Kill everyone                           
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-example0--------------------------------------------------------------------------------
+example1--------------------------------------------------------------------------------
 ####
 # Each team's file must define four tokens:
 #     team_name: a string
@@ -31,9 +31,9 @@ example0------------------------------------------------------------------------
 #     move: A function that returns 'c' or 'b'
 ####
 
-team_name = 'E0'
-strategy_name = 'Collude'
-strategy_description = 'Always collude.'
+team_name = 'E1'
+strategy_name = 'Betray'
+strategy_description = 'Always betray.'
     
 def move(my_history, their_history, my_score, their_score):
     '''Make my move based on the history with this player.
@@ -46,9 +46,9 @@ def move(my_history, their_history, my_score, their_score):
     Returns 'c' or 'b' for collude or betray.
     '''
     
-    # This player always colludes.
-    return 'c'
-    --------------------------------------------------------------------------------
+    #This example player always betrays.      
+    return 'b'
+--------------------------------------------------------------------------------
 example6--------------------------------------------------------------------------------
 ####
 # Each team's file must define four tokens:
@@ -59,56 +59,64 @@ example6------------------------------------------------------------------------
 ####
 
 team_name = 'E6'
-strategy_name = 'Collude until betrayed'
+strategy_name = 'Kill everyone'
 strategy_description = '''\
 Collude first round. Collude, unless betrayed; then always betray.'''
     
 def move(my_history, their_history, my_score, their_score):
     if len(my_history)==0:
         return 'c'
-    elif len(my_history)<5 & len(my_history)>0:
-        if my_history[-1]=='c' and their_history[-1]=='b':
+    elif len(my_history) == 1:
+        if their_history[-1]=='b':
             return 'b'
         else:
             return 'c'
-            
-    last6rounds = their_history[-6:]
+    elif len(my_history)<5 & len(my_history)>0:
+        if my_history[-1]=='c' and their_history[-1]=='b':
+            return 'b'
+        elif my_history[-1]=='b' and their_history[-1]=='b':
+            return 'b'
+        else:
+            return 'c'
+    elif len(my_history) > 5:
+        last6rounds = str(their_history[-6:])
     
-    n = 0
-    for c in last6rounds:
-        n=n+1
-        print(n)
-    
-    if n/6 < 0.5:
-        return 'c' # Betray if severely punished last time,
-    else:
-        return 'b' # otherwise collude--------------------------------------------------------------------------------
-Section 3 - Game Data for Team E0
+        n = 0
+        for thing in last6rounds:
+            letter = thing
+            if letter == 'c':
+                n=n+1
+        
+        if n > 3:
+            return 'c' # Betray if severely punished last time,
+        else:
+            return 'b' # otherwise collude--------------------------------------------------------------------------------
+Section 3 - Game Data for Team E1
 --------------------------------------------------------------------------------
--484 pt/round: E0(P0) "Collude"
-96 pt/round: E6(P1) "Collude until betrayed"
-CCCCCCcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-CCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+-248 pt/round: E1(P0) "Betray"
+-252 pt/round: E6(P1) "Kill everyone"
+Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+cb    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-cccccccccccccccccccccccc
-BBBBBBBBBBBBBBBBBBBBBBBB
+bbbbbb
+bbbbbb
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 Section 3 - Game Data for Team E6
 --------------------------------------------------------------------------------
-96 pt/round: E6(P1) "Collude until betrayed"
--484 pt/round: E0(P0) "Collude"
-CCCCCCBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-CCCCCCcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+-252 pt/round: E6(P1) "Kill everyone"
+-248 pt/round: E1(P0) "Betray"
+cb    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 
-BBBBBBBBBBBBBBBBBBBBBBBB
-cccccccccccccccccccccccc
+bbbbbb
+bbbbbb
 
 --------------------------------------------------------------------------------
